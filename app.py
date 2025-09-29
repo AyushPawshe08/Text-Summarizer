@@ -2,7 +2,8 @@ from flask import Flask, request, jsonify, render_template
 from transformers import pipeline
 import re
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="frontend")
+
 
 # Load summarizer once
 summarizer = pipeline("summarization", model="facebook/bart-large-cnn", device=-1)
@@ -67,3 +68,4 @@ def summarize():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
