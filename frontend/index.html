@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Text Summarizer</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
+  <div class="bg-white shadow-2xl rounded-2xl p-6 w-full max-w-3xl">
+    <h1 class="text-3xl font-bold text-center text-blue-600 mb-6">📝 AI Text Summarizer</h1>
+
+    <!-- Input Section -->
+    <label for="inputText" class="block text-lg font-semibold mb-2">Enter your text:</label>
+    <textarea id="inputText" class="w-full h-48 p-4 border rounded-lg focus:ring-2 focus:ring-blue-400 mb-4" placeholder="Paste your article or interview here..."></textarea>
+
+    <!-- Mode Selection -->
+    <div class="flex justify-center gap-6 mb-4">
+      <label class="flex items-center gap-2">
+        <input type="radio" name="mode" value="brief" checked class="text-blue-600"> 
+        <span>Brief</span>
+      </label>
+      <label class="flex items-center gap-2">
+        <input type="radio" name="mode" value="detailed" class="text-blue-600"> 
+        <span>Detailed</span>
+      </label>
+      <label class="flex items-center gap-2">
+        <input type="radio" name="mode" value="bullet" class="text-blue-600"> 
+        <span>Bullet Points</span>
+      </label>
+    </div>
+
+    <!-- Button -->
+    <button onclick="summarize()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg w-full font-semibold">
+      Summarize
+    </button>
+
+    <!-- Loading Indicator -->
+    <p id="loading" class="text-center text-gray-500 mt-4 hidden">⏳ Summarizing your text...</p>
+
+    <!-- Output -->
+    <div class="mt-6">
+      <h2 class="text-xl font-bold mb-2 text-gray-700">Summary:</h2>
+      <div id="output" class="bg-gray-50 border rounded-lg p-4 min-h-[100px] text-gray-800 whitespace-pre-line"></div>
+    </div>
+  </div>
+
+  <script>
+    async function summarize() {
+      const text = document.getElementById("inputText").value;
+      const mode = document.querySelector('input[name="mode"]:checked').value;
+      const loading = document.getElementById("loading");
+      const output = document.getElementById("output");
+
+      if (!text.trim()) {
+        output.innerText = "⚠️ Please enter some text.";
+        return;
+      }
+
+      loading.classList.remove("hidden");
+
+      try {
+        const response = await axios.post("/summarize", 
+          { text, mode },
+          { headers: { "Content-Type": "application/json" } }
+        );
+
+        output.innerText = response.data.summary;
+      } catch (error) {
+        output.innerText = "❌ Error: Could not summarize. Check Flask console.";
+        console.error(error);
+      } finally {
+        loading.classList.add("hidden");
+      }
+    }
+  </script>
+</body>
+</html>
